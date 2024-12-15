@@ -1,0 +1,2 @@
+databaseLocation=working/database/cmp.db
+musicLocation=~/Music/
