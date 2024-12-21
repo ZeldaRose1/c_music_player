@@ -1,21 +1,29 @@
 #pragma once
 
 #include <string>
+#include "Database.h"
+
+class Database;
 
 class View{
     private:
         static int view_count;
+        Database *d;
     public:
         virtual void update();
+        void setDatabase(Database);
         // TODO: fix the equality check once the views are distinguished
         bool operator==(const View& rhs) {
             return true;
         }
 };
 
-class FullTrackView : public View{
+class MainView : public View{
+    // This view displays the tracks and allows the user to 
+    // control which track to play.
     private:
     public:
+        MainView(Database); // Constructor that will set the DB pointer
         void update();
 };
 
