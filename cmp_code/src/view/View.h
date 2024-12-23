@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "Database.h"
+#include "../database/Database.h"
 
 class Database;
 
@@ -10,7 +10,7 @@ class View{
         static int view_count;
         Database *d;
     public:
-        virtual void update();
+        // virtual void update();
         void setDatabase(Database);
         // TODO: fix the equality check once the views are distinguished
         bool operator==(const View& rhs) {
@@ -24,15 +24,15 @@ class MainView : public View{
     private:
     public:
         MainView(Database); // Constructor that will set the DB pointer
-        void update();
+        // void update();
 };
 
-class EditorView : public View{
-    public:
-        void update();
-};
+// class EditorView : public View{
+//     public:
+//         void update();
+// };
 
-class PlaylistView : public View{
-    public:
-        void update();
-};
+// class PlaylistView : public View{
+//     public:
+//         void update();
+// };

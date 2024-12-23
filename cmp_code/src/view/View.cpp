@@ -1,6 +1,6 @@
 #include <string>
-#include "View.h"
-#include "Database.h"
+#include "../view/View.h"
+#include "../database/Database.h"
 
 
 void View::setDatabase(Database d){

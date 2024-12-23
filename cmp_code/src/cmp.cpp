@@ -1,6 +1,6 @@
 // #include "Config.h"
-#include "Database.h"
-#include "View.h"
+#include "database/Database.h"
+#include "view/View.h"
 #include "taglib/tag_c.h"
 #include <ncurses.h>
 

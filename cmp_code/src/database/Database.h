@@ -8,16 +8,15 @@
 
 // Third party imports
 #include <sqlite3.h>
-// #include <taglib/tag_c.h>  // This is not needed the rest are imported from taglib/examples
-#include "tpropertymap.h"
-#include "tstringlist.h"
-#include "tvariant.h"
-#include "fileref.h"
-#include "tag.h"
+#include <taglib/tpropertymap.h>
+#include <taglib/tstringlist.h>
+#include <taglib/tvariant.h>
+#include <taglib/fileref.h>
+#include <taglib/tag.h>
 
 // Custom library imports
-#include "Config.h"
-#include "View.h"
+#include "../config/Config.h"
+#include "../view/View.h"
 
 using namespace std;
 

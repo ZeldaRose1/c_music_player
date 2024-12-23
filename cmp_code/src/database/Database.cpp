@@ -14,9 +14,9 @@
 #include "tag.h"
 
 // Custom library imports
-#include "Config.h"
-#include "Database.h"
-#include "View.h"
+#include "../config/Config.h"
+#include "../database/Database.h"
+#include "../view/View.h"
 
 using namespace std;
 
