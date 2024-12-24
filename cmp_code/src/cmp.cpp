@@ -9,9 +9,7 @@ using namespace std;
 int main(int argc, char ** argv) {
 
     Database d;
-    // d.scanMusicFolder("");
     MainView v(d);
-    
 
     return 0;
 };
