@@ -9,7 +9,8 @@ using namespace std;
 int main(int argc, char ** argv) {
 
     Database d;
-    MainView v(d);
+    // MainView v(d);
+    d.updateReleaseYear(1, 2017);
 
     return 0;
 };

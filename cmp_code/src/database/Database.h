@@ -74,6 +74,16 @@ class Database{
         void notify();
         void addTrack(string); // Add track at file location to database
         sqlite3 * getDatabase();
+        
+        // Update database functions
+        void updateTrackNo(int, int); // TODO; update UML with the update functions
+        void updateTitle(int, string);
+        void updateArtist(int, string);
+        void updateAlbum(int, string);
+        void updateReleaseYear(int, int);
+        // void updateDuration(int, float); // TODO: Implement automated method
+        void updateCoverArt(int, string);
+
         // bool checkTables(); // Verifies that the tables exist
 };
 

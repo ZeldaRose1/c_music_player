@@ -410,4 +410,169 @@ void Database::addTrack(string path)
 
 sqlite3 * Database::getDatabase(){
     return this->db;
-}
+};
+
+void Database::updateTrackNo(int id, int t_no){
+    // Update track_no of track with id of id to t_no
+    
+    // Variables
+    int error = 0;
+    sqlite3_stmt *stmt;
+
+    // Prepare update query string.
+    string q = "UPDATE tracks SET track_no = ";
+    q.append(to_string(t_no));
+    q.append(" WHERE track_id = ");
+    q.append(to_string(id));
+    q.append(";");
+    // cout << q << endl;
+
+    // Prepare statement
+    error = sqlite3_prepare_v2(db, q.c_str(), -1, &stmt, nullptr);
+    if (error != SQLITE_OK)
+        cout << error << "\tupdateTrackNo prepare error:\t" << sqlite3_errmsg(db) << endl;
+    
+    // Step statement
+    error = sqlite3_step(stmt);
+    if (error != SQLITE_DONE)
+        cout << error << "\tupdateTrackNo step error:\t" << sqlite3_errmsg(db) << endl;
+    
+    sqlite3_finalize(stmt);
+};
+
+void Database::updateTitle(int id, string t){
+    // Update title of track with id of id to t
+    
+    // Variables
+    int error = 0;
+    sqlite3_stmt *stmt;
+
+    // Prepare update query string.
+    string q = "UPDATE tracks SET title = '";
+    q.append(t);
+    q.append("' WHERE track_id = ");
+    q.append(to_string(id));
+    q.append(";");
+    // cout << q << endl;
+
+    // Prepare statement
+    error = sqlite3_prepare_v2(db, q.c_str(), -1, &stmt, nullptr);
+    if (error != SQLITE_OK)
+        cout << error << "\tupdateTitle prepare error:\t" << sqlite3_errmsg(db) << endl;
+    
+    // Step statement
+    error = sqlite3_step(stmt);
+    if (error != SQLITE_DONE)
+        cout << error << "\tupdateTitle step error:\t" << sqlite3_errmsg(db) << endl;
+    
+    sqlite3_finalize(stmt);
+};
+
+void Database::updateArtist(int id, string a){
+    // Update Artist of track with id of id to a
+    
+    // Variables
+    int error = 0;
+    sqlite3_stmt *stmt;
+
+    // Prepare update query string.
+    string q = "UPDATE tracks SET artist_name = '";
+    q.append(a);
+    q.append("' WHERE track_id = ");
+    q.append(to_string(id));
+    q.append(";");
+
+    // Prepare statement
+    error = sqlite3_prepare_v2(db, q.c_str(), -1, &stmt, nullptr);
+    if (error != SQLITE_OK)
+        cout << error << "\tupdateArtist prepare error:\t" << sqlite3_errmsg(db) << endl;
+    
+    // Execute statement
+    error = sqlite3_step(stmt);
+    if (error != SQLITE_DONE)
+        cout << error << "\tupdateArtist step error:\t" << sqlite3_errmsg(db) << endl;
+    
+    sqlite3_finalize(stmt);
+};
+
+void Database::updateAlbum(int id, string an){
+    // Update album_name of track with id of id to an
+    
+    // Variables
+    int error = 0;
+    sqlite3_stmt *stmt;
+
+    // Prepare update query string.
+    string q = "UPDATE tracks SET album_name = '";
+    q.append(an);
+    q.append("' WHERE track_id = ");
+    q.append(to_string(id));
+    q.append(";");
+
+    // Prepare statement
+    error = sqlite3_prepare_v2(db, q.c_str(), -1, &stmt, nullptr);
+    if (error != SQLITE_OK)
+        cout << error << "\tupdateAlbum prepare error:\t" << sqlite3_errmsg(db) << endl;
+    
+    // Execute statement
+    error = sqlite3_step(stmt);
+    if (error != SQLITE_DONE)
+        cout << error << "\tupdateAlbum step error:\t" << sqlite3_errmsg(db) << endl;
+    
+    sqlite3_finalize(stmt);
+};
+
+void Database::updateReleaseYear(int id, int y){
+    // Update release_year of track with id of id to y
+    
+    // Variables
+    int error = 0;
+    sqlite3_stmt *stmt;
+
+    // Prepare update query string.
+    string q = "UPDATE tracks SET release_year = ";
+    q.append(to_string(y));
+    q.append(" WHERE track_id = ");
+    q.append(to_string(id));
+    q.append(";");
+    // cout << q << endl;
+
+    // Prepare statement
+    error = sqlite3_prepare_v2(db, q.c_str(), -1, &stmt, nullptr);
+    if (error != SQLITE_OK)
+        cout << error << "\tupdateReleaseYear prepare error:\t" << sqlite3_errmsg(db) << endl;
+    
+    // Step statement
+    error = sqlite3_step(stmt);
+    if (error != SQLITE_DONE)
+        cout << error << "\tupdateReleaseYear step error:\t" << sqlite3_errmsg(db) << endl;
+    
+    sqlite3_finalize(stmt);
+};
+
+void Database::updateCoverArt(int id, string ca_path){
+    // Update album_name of track with id of id to an
+    
+    // Variables
+    int error = 0;
+    sqlite3_stmt *stmt;
+
+    // Prepare update query string.
+    string q = "UPDATE tracks SET cover_art = '";
+    q.append(ca_path);
+    q.append("' WHERE track_id = ");
+    q.append(to_string(id));
+    q.append(";");
+
+    // Prepare statement
+    error = sqlite3_prepare_v2(db, q.c_str(), -1, &stmt, nullptr);
+    if (error != SQLITE_OK)
+        cout << error << "\tupdateAlbum prepare error:\t" << sqlite3_errmsg(db) << endl;
+    
+    // Execute statement
+    error = sqlite3_step(stmt);
+    if (error != SQLITE_DONE)
+        cout << error << "\tupdateAlbum step error:\t" << sqlite3_errmsg(db) << endl;
+    
+    sqlite3_finalize(stmt);
+};

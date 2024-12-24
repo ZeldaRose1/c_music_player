@@ -132,6 +132,7 @@ MainView::MainView(Database d){
             default:
                 break;
         }
+        // Edit this to play song instead of printing selection.
         if (choice == 10) // 10 is enter key
             mvwprintw(main_w, yMax - 2, 0, "Your choice was: %s", title[highlight - 1].c_str());
     }

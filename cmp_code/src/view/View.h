@@ -27,10 +27,10 @@ class MainView : public View{
         // void update();
 };
 
-// class EditorView : public View{
-//     public:
-//         void update();
-// };
+class EditorView : public View{
+    public:
+        // void update();
+};
 
 // class PlaylistView : public View{
 //     public:
