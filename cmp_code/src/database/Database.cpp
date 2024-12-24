@@ -36,7 +36,7 @@ Database::Database(){
     int exit = 0;
     // Open database and save error flag to exit
     exit = sqlite3_open(conf.getDatabaseLocation().c_str(), &db);
-    cout << "database location:\t" << conf.getDatabaseLocation() << endl;
+    // cout << "database location:\t" << conf.getDatabaseLocation() << endl;
 
     if (exit){
         cerr << "Error opening sqlite database:\n" << sqlite3_errmsg(db) << endl;
@@ -44,7 +44,6 @@ Database::Database(){
 
     // Create tables if they do not exist
     createTables();
-
 };
 
 
@@ -119,56 +118,46 @@ void Database::createTables(){
     
     // Save output variable
     int exit = 0;
-    // Save query to variable
-    string sql_tasks = "CREATE TABLE IF NOT EXISTS tracks(\
-        track_id INTEGER PRIMARY KEY AUTOINCREMENT,\
-        track_no INTEGER,\
-        title TEXT,\
-        album_name TEXT,\
-        artist_name TEXT,\
-        release_year INT,\
-        duration FLOAT,\
-        cover_art TEXT,\
-        track_location TEXT UNIQUE\
-        );";
-    // Save statement variable to save prepared stmt output
-    sqlite3_stmt *stmt;
-    // Prepare make table query
-    exit = sqlite3_prepare_v2(db, sql_tasks.c_str(), -1, &stmt, nullptr);
-    // Check for errors on preparing query
-    if (exit != SQLITE_OK) {
-        cout << "Error preparing tasks table query:\t" << sqlite3_errmsg(db) << endl;
-        return;
-    }
+    string c_query;
+    int row_count;
 
-    // Reset error catching variable
-    exit = 0;
-    // Execute make table query
-    exit = sqlite3_step(stmt);
-    // Release resources from statement
+    // Check if table exists
+    c_query = "SELECT COUNT(*) FROM tracks;";
+    sqlite3_stmt *stmt;
+    bool track_table = false;
+    sqlite3_prepare_v2(db, c_query.c_str(), -1, &stmt, nullptr);
+    while(sqlite3_step(stmt) == SQLITE_OK)
+    {
+        row_count = sqlite3_column_int(stmt, 0);
+        if (row_count >= 0)
+        {
+            cout << "Tracks has " << row_count << " rows" << endl;
+            track_table = true;
+        }
+    }
     sqlite3_finalize(stmt);
 
-    if (exit != SQLITE_DONE) {
-        cout << "Error creating table:\t" << sqlite3_errmsg(db) << endl;
-        return;
-    }
-
-    // Make playlists table
-    exit = 0;
+    if (!track_table)
+    {
         // Save query to variable
-        string sql_playlist = "CREATE TABLE IF NOT EXISTS playlists(\
-            track_id INT,\
-            name TEXT,\
+        string sql_tasks = "CREATE TABLE IF NOT EXISTS tracks(\
+            track_id INTEGER PRIMARY KEY AUTOINCREMENT,\
+            track_no INTEGER,\
+            title TEXT,\
+            album_name TEXT,\
+            artist_name TEXT,\
+            release_year INT,\
             duration FLOAT,\
-            track_count INT,\
-            PRIMARY KEY (track_id, name)\
-            FOREIGN KEY (track_id) REFERENCES tracks(track_id)\
-        );";
+            cover_art TEXT,\
+            track_location TEXT UNIQUE\
+            );";
+        // Save statement variable to save prepared stmt output
+        sqlite3_stmt *stmt;
         // Prepare make table query
-        exit = sqlite3_prepare_v2(db, sql_playlist.c_str(), -1, &stmt, nullptr);
+        exit = sqlite3_prepare_v2(db, sql_tasks.c_str(), -1, &stmt, nullptr);
         // Check for errors on preparing query
         if (exit != SQLITE_OK) {
-            cout << "Error preparing playlists table query:\t" << sqlite3_errmsg(db) << endl;
+            cout << "Error preparing tasks table query:\t" << sqlite3_errmsg(db) << endl;
             return;
         }
 
@@ -180,35 +169,104 @@ void Database::createTables(){
         sqlite3_finalize(stmt);
 
         if (exit != SQLITE_DONE) {
-            cout << "Error creating playlists table:\t" << sqlite3_errmsg(db) << endl;
+            cout << "Error creating table:\t" << sqlite3_errmsg(db) << endl;
+            return;
+        }
+    }
+
+    // Check if playlists table exists
+    c_query = "SELECT COUNT(*) FROM playlists;";
+    bool playlists_table = false;
+    sqlite3_prepare_v2(db, c_query.c_str(), -1, &stmt, nullptr);
+    while(sqlite3_step(stmt) == SQLITE_OK)
+    {
+        row_count = sqlite3_column_int(stmt, 0);
+        if (row_count >= 0)
+        {
+            cout << "Playlists has " << row_count << " rows" << endl;
+            playlists_table = true;
+        }
+    }
+    sqlite3_finalize(stmt);
+    
+    if (!playlists_table)
+    {
+        // Make playlists table
+        exit = 0;
+            // Save query to variable
+            string sql_playlist = "CREATE TABLE IF NOT EXISTS playlists(\
+                track_id INT,\
+                name TEXT,\
+                duration FLOAT,\
+                track_count INT,\
+                PRIMARY KEY (track_id, name)\
+                FOREIGN KEY (track_id) REFERENCES tracks(track_id)\
+            );";
+            // Prepare make table query
+            exit = sqlite3_prepare_v2(db, sql_playlist.c_str(), -1, &stmt, nullptr);
+            // Check for errors on preparing query
+            if (exit != SQLITE_OK) {
+                cout << "Error preparing playlists table query:\t" << sqlite3_errmsg(db) << endl;
+                return;
+            }
+
+            // Reset error catching variable
+            exit = 0;
+            // Execute make table query
+            exit = sqlite3_step(stmt);
+            // Release resources from statement
+            sqlite3_finalize(stmt);
+
+            if (exit != SQLITE_DONE) {
+                cout << "Error creating playlists table:\t" << sqlite3_errmsg(db) << endl;
+                return;
+            }
+    }
+
+
+    // Check if tags table exists
+    c_query = "SELECT COUNT(*) FROM tags;";
+    bool tags_table = false;
+    sqlite3_prepare_v2(db, c_query.c_str(), -1, &stmt, nullptr);
+    while(sqlite3_step(stmt) == SQLITE_OK)
+    {
+        row_count = sqlite3_column_int(stmt, 0);
+        if (row_count >= 0)
+        {
+            cout << "Tags has " << row_count << " rows" << endl;
+            tags_table = true;
+        }
+    }
+    sqlite3_finalize(stmt);
+    
+    if (!tags_table)
+    {
+        exit = 0;
+        // Save query to variable
+        string sql_tags = "CREATE TABLE IF NOT EXISTS tags(\
+            track_id INTEGER,\
+            tag TEXT,\
+            PRIMARY KEY(track_id, tag)\
+            FOREIGN KEY (track_id) REFERENCES tasks(task_id));";
+        // Prepare make table query
+        exit = sqlite3_prepare_v2(db, sql_tags.c_str(), -1, &stmt, nullptr);
+        // Check for errors on preparing query
+        if (exit != SQLITE_OK) {
+            cout << "Error preparing tags table query:\t" << sqlite3_errmsg(db) << endl;
             return;
         }
 
-    exit = 0;
-    // Save query to variable
-    string sql_tags = "CREATE TABLE IF NOT EXISTS tags(\
-        track_id INTEGER,\
-        tag TEXT,\
-        PRIMARY KEY(track_id, tag)\
-        FOREIGN KEY (track_id) REFERENCES tasks(task_id));";
-    // Prepare make table query
-    exit = sqlite3_prepare_v2(db, sql_tags.c_str(), -1, &stmt, nullptr);
-    // Check for errors on preparing query
-    if (exit != SQLITE_OK) {
-        cout << "Error preparing tags table query:\t" << sqlite3_errmsg(db) << endl;
-        return;
-    }
+        // Reset error catching variable
+        exit = 0;
+        // Execute make table query
+        exit = sqlite3_step(stmt);
+        // Release resources from statement
+        sqlite3_finalize(stmt);
 
-    // Reset error catching variable
-    exit = 0;
-    // Execute make table query
-    exit = sqlite3_step(stmt);
-    // Release resources from statement
-    sqlite3_finalize(stmt);
-
-    if (exit != SQLITE_DONE) {
-        cout << "Error creating tags table:\t" << sqlite3_errmsg(db) << endl;
-        return;
+        if (exit != SQLITE_DONE) {
+            cout << "Error creating tags table:\t" << sqlite3_errmsg(db) << endl;
+            return;
+        }
     }
 }
 
@@ -235,7 +293,7 @@ void Database::scanMusicFolder(string folder=""){
         else
         {
             // Print elements of a path
-            std::cout << outfilename << std::endl;
+
             // Define a reference to the file
             TagLib::FileRef f(outfilename.string().c_str());
             
@@ -244,26 +302,7 @@ void Database::scanMusicFolder(string folder=""){
             {
                 // Assign a tag pointer to the current file.
                 addTrack(outfilename);
-                // TagLib::Tag *tag = f.file()->tag();
-                // if (tag != nullptr)
-                // {
-                //     if (tag->isEmpty())
-                //         cout << "tag is empty" << endl;
-                //     else
-                //     {
-                //         cout << "tag is not empty" << endl;
-                //         cout << "Track:\t" << tag->title().toCString() << endl;
-                //         cout << "Album name:\t" << tag->album().toCString() << endl;
-                //         cout << "Artist:\t" << tag->artist().toCString() << endl;
-                //     }
-                // }
-                
-                // cout << "Track:\t" << tag->title().toCString() << endl;
             }
-            // else
-            // {
-            //     cout << "File:\t" << outfilename <<"\t either f.isnull() or f.file() returns NULL" << endl;
-            // }
         }
 
     }
@@ -306,7 +345,7 @@ void Database::addTrack(string path)
                 genre = "";
                 release_year = 0;
                 track_no = 0;
-                cout << "Path:\t" << path << "\nis empty, but title reads as:\t" << title << endl;
+                // cout << "Path:\t" << path << "\nis empty, but title reads as:\t" << title << endl;
             }
             else
             {
@@ -340,7 +379,7 @@ void Database::addTrack(string path)
         
         // Save variable to check for errors
         int err = 0;
-        cout << "Query to insert track:\n" << query << endl;
+        // cout << "Query to insert track:\n" << query << endl;
 
         // Initialize stmt variable and prepare query
         sqlite3_stmt *stmt;
@@ -349,7 +388,7 @@ void Database::addTrack(string path)
         // Check for errors in preparing SQL statement
         if (err != SQLITE_OK)
         {
-            cout << "Error parsing track insert query\n" << sqlite3_errmsg(db) << endl;
+            // cout << "Error parsing track insert query\n" << sqlite3_errmsg(db) << endl;
         }
 
         // Execute statement and save output to err
@@ -359,7 +398,7 @@ void Database::addTrack(string path)
         sqlite3_finalize(stmt);
 
         if (err != SQLITE_DONE) {
-            cout << "Error adding task:\t" << path << "\n" << sqlite3_errmsg(db) << endl;
+            // cout << "Error adding task:\t" << path << "\n" << sqlite3_errmsg(db) << endl;
             return;
         }
     }
@@ -368,3 +407,7 @@ void Database::addTrack(string path)
         cout << "File:\t" << path <<"\t either f.isnull() or f.file() returns NULL" << endl;
     }
 };
+
+sqlite3 * Database::getDatabase(){
+    return this->db;
+}

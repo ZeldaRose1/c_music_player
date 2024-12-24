@@ -11,7 +11,7 @@ class View{
         Database *d;
     public:
         // virtual void update();
-        void setDatabase(Database);
+        void setDatabase(Database&);
         // TODO: fix the equality check once the views are distinguished
         bool operator==(const View& rhs) {
             return true;

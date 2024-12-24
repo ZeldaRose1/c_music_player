@@ -73,6 +73,8 @@ class Database{
         void scanMusicFolder(string); // Scan through database
         void notify();
         void addTrack(string); // Add track at file location to database
+        sqlite3 * getDatabase();
+        // bool checkTables(); // Verifies that the tables exist
 };
 
 
