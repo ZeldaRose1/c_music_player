@@ -20,7 +20,45 @@
 
 using namespace std;
 
-void Database::subscribe(View v) {view_list.push_back(v);}; // Add view to the list of views
+Track::Track(
+    int t_id,
+    int t_no,
+    string title,
+    string album_name,
+    string artist_name,
+    int r_year,
+    float dur,
+    string c_art,
+    string t_loc,
+    int tmp_index
+) {
+    // Constructor for the Track that autofills the attributes
+    this->track_id = t_id;
+    this->track_no = t_no;
+    this->title = title;
+    // this->genre = ;
+    this->album_name = album_name;
+    this->artist_name = artist_name;
+    this->release_year = r_year;
+    this->duration = dur;
+    this->track_location = t_loc;
+    this->cover_art = c_art;
+    this->tmp_id = tmp_index;
+};
+
+int Track::GetTrackId(){return track_id;};
+int Track::GetTrackNo(){return track_no;};
+string Track::GetTitle(){return title;};
+// string Track::GetGenre(){return genre;};
+string Track::GetAlbumName(){return album_name;};
+string Track::GetArtistName(){return artist_name;};
+int Track::GetReleaseYear(){return release_year;};
+float Track::GetDuration(){return duration;};
+string Track::GetTrackLocation(){return track_location;};
+string Track::GetCoverArt(){return cover_art;};
+int Track::GetTmpId(){return tmp_id;};
+
+// void Database::subscribe(View v) {view_list.push_back(v);}; // Add view to the list of views
 
 Database::Database(){
     // Set configuration to the passed config
@@ -47,27 +85,27 @@ Database::Database(){
 };
 
 
-void Database::unsubscribe(View v)
-{
-    for (int i = 0; i < view_list.size(); i++)
-    {
-        // Check for equality in view vector
-        if (view_list[i] == v)
-        {
-            // Pull all views one space earlier to overwrite space i
-            for (int j = i + 1; j < view_list.size(); j++)
-            {
-                view_list[j - 1] = view_list[j];
-            }
+// void Database::unsubscribe(View v)
+// {
+//     for (int i = 0; i < view_list.size(); i++)
+//     {
+//         // Check for equality in view vector
+//         if (view_list[i] == v)
+//         {
+//             // Pull all views one space earlier to overwrite space i
+//             for (int j = i + 1; j < view_list.size(); j++)
+//             {
+//                 view_list[j - 1] = view_list[j];
+//             }
             
-            // Delete the last element that is now duplicated
-            view_list.pop_back();
+//             // Delete the last element that is now duplicated
+//             view_list.pop_back();
             
-            // Exist loop to ensure only first view match is deleted
-            break;
-        }
-    }
-};
+//             // Exist loop to ensure only first view match is deleted
+//             break;
+//         }
+//     }
+// };
 
 
 void Database::checkDirectory(string path="working/database/cmp.db"){
@@ -375,7 +413,7 @@ void Database::addTrack(string path)
                 track_location \
                 ) \
             VALUES ( '" + title + "', '" + album_name + "', '" + artist_name +\
-                "', " + to_string(release_year) + ", " + "NULL, '" + path + "');";
+                "', " + to_string(release_year) + ", " + "'', '" + path + "');";
         
         // Save variable to check for errors
         int err = 0;
@@ -576,3 +614,94 @@ void Database::updateCoverArt(int id, string ca_path){
     
     sqlite3_finalize(stmt);
 };
+
+
+void Database::pullTracks(vector<Track> &tv) { // tv = track vector
+    // Updates the vector passed in by reference to match DB
+    
+    // Prepare temporary variables to prepare Track object
+    int tmp_index;
+    int t_id;
+    int t_no;
+    string title;
+    string album_name;
+    string artist_name;
+    int r_year;
+    float dur;
+    string c_art;
+    string t_loc;
+
+    // Clear the vector if it already contains data
+    if (tv.size() > 0)
+        tv.clear();
+    
+    // Write query
+    string query = "\
+    SELECT\
+        SUM(1) OVER (ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW),\
+        track_id,\
+        track_no,\
+        title,\
+        album_name,\
+        artist_name,\
+        release_year,\
+        duration,\
+        cover_art,\
+        track_location\
+    FROM\
+        tracks;";
+    // Initialize statement object to store results
+    sqlite3_stmt* stmt;
+    // Prepare query
+    sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+
+    // Set control boolean
+    bool done = false;
+    while (!done)
+    {
+        switch(sqlite3_step(stmt))
+        {
+            case SQLITE_ROW:
+                // Process row into vectors
+                tmp_index = sqlite3_column_int(stmt, 0);
+                t_id = sqlite3_column_int(stmt, 1);
+                t_no = sqlite3_column_int(stmt, 2);
+                title = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+                album_name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+                artist_name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
+                r_year = sqlite3_column_int(stmt, 6);
+                dur = sqlite3_column_double(stmt, 7);
+                c_art = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 8));
+                t_loc = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 9));
+
+                tv.push_back(Track
+                    (
+                        t_id,
+                        t_no,
+                        title,
+                        album_name,
+                        artist_name,
+                        r_year,
+                        dur,
+                        c_art,
+                        t_loc,
+                        tmp_index
+                    )
+                );
+                break;
+            
+            case SQLITE_DONE:
+                done = true;
+                break;
+            
+            default:
+                // TODO: implement error handling here
+                fprintf(stderr, "Failed to grab tracks.\n");
+                cout << (sqlite3_errmsg(db)) << endl;
+                done = true;
+                break;
+        }
+    }
+    sqlite3_finalize(stmt);
+    cout << "pullTracks ran successfully" << endl;
+}

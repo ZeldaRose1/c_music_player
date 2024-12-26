@@ -33,8 +33,22 @@ class Track{
         string artist_name; // Artist who performs in track
         int release_year; // Year track was released
         float duration; // length of track
-        string trackLocation; // Absolute path to file location
+        string track_location; // Absolute path to file location
         string cover_art; // path to cover art.
+        int tmp_id; // Temporary id for sorting
+    public:
+        Track(int, int, string, string, string, int, float, string, string, int);
+        int GetTrackId();
+        int GetTrackNo();
+        string GetTitle();
+        // string GetGenre();
+        string GetAlbumName();
+        string GetArtistName();
+        int GetReleaseYear();
+        float GetDuration();
+        string GetTrackLocation();
+        string GetCoverArt();
+        int GetTmpId();
 };
 
 
@@ -68,8 +82,8 @@ class Database{
         ~Database(); // Destructor
         // Database(string, Config); // Forward declaration of constructor
         void refresh_database(); // Refresh SQL database
-        void subscribe(View); // Add view to the list of views
-        void unsubscribe(View); // Remove view from view_list
+        // void subscribe(View); // Add view to the list of views
+        // void unsubscribe(View); // Remove view from view_list
         void scanMusicFolder(string); // Scan through database
         void notify();
         void addTrack(string); // Add track at file location to database
@@ -84,7 +98,7 @@ class Database{
         // void updateDuration(int, float); // TODO: Implement automated method
         void updateCoverArt(int, string);
 
-        // bool checkTables(); // Verifies that the tables exist
+        void pullTracks(vector<Track>&); // Pull a vector of all inputs
 };
 
 

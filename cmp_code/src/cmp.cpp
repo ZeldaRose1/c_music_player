@@ -9,8 +9,15 @@ using namespace std;
 int main(int argc, char ** argv) {
 
     Database d;
-    // MainView v(d);
-    d.updateReleaseYear(1, 2017);
+    MainView v(d);
+    // d.updateReleaseYear(1, 2017);
+
+    // TODO: Rework Views so they are handling Track objects directly
+    // database should handle the querying and there should be a simple
+    // refresh() command to update the information for a given view
+
+    // TODO: Find a way to get the music to play. OpenAL already imported
+    // to View.cpp with the cmake file.
 
     return 0;
 };

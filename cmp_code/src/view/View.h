@@ -29,6 +29,8 @@ class MainView : public View{
 
 class EditorView : public View{
     public:
+        EditorView(Database, int); // Constructor
+        // ~EditorView(); // Destructor
         // void update();
 };
 
