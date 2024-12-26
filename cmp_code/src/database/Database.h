@@ -38,6 +38,8 @@ class Track{
         int tmp_id; // Temporary id for sorting
     public:
         Track(int, int, string, string, string, int, float, string, string, int);
+        
+        // Getters
         int GetTrackId();
         int GetTrackNo();
         string GetTitle();
@@ -49,6 +51,19 @@ class Track{
         string GetTrackLocation();
         string GetCoverArt();
         int GetTmpId();
+
+        // Setters
+        void SetTrackId(int);
+        void SetTrackNo(int);
+        void SetTitle(string);
+        void GetGenre(string);
+        void SetAlbumName(string);
+        void SetArtistName(string);
+        void SetReleaseYear(int);
+        void SetDuration(float);
+        void SetTrackLocation(string);
+        void SetCoverArt(string);
+        void SetTmpId(int);
 };
 
 

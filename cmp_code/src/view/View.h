@@ -4,6 +4,7 @@
 #include "../database/Database.h"
 
 class Database;
+class Track;
 
 class View{
     private:
@@ -29,7 +30,7 @@ class MainView : public View{
 
 class EditorView : public View{
     public:
-        EditorView(Database, int); // Constructor
+        EditorView(Database, Track); // Constructor
         // ~EditorView(); // Destructor
         // void update();
 };

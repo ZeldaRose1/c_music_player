@@ -46,6 +46,7 @@ Track::Track(
     this->tmp_id = tmp_index;
 };
 
+// Define Track Getters
 int Track::GetTrackId(){return track_id;};
 int Track::GetTrackNo(){return track_no;};
 string Track::GetTitle(){return title;};
@@ -57,6 +58,20 @@ float Track::GetDuration(){return duration;};
 string Track::GetTrackLocation(){return track_location;};
 string Track::GetCoverArt(){return cover_art;};
 int Track::GetTmpId(){return tmp_id;};
+
+// Define Track setters
+void Track::SetTrackId(int i) {track_id = i;};
+void Track::SetTrackNo(int i) {track_no = i;};
+void Track::SetTitle(string s) {title = s;};
+void Track::GetGenre(string s) {genre = s;};
+void Track::SetAlbumName(string s) {album_name = s;};
+void Track::SetArtistName(string s) {artist_name = s;};
+void Track::SetReleaseYear(int i) {release_year = i;};
+void Track::SetDuration(float f) {duration = f;};
+void Track::SetTrackLocation(string s) {track_location = s;};
+void Track::SetCoverArt(string s) {cover_art = s;};
+void Track::SetTmpId(int i) {tmp_id = i;};
+
 
 // void Database::subscribe(View v) {view_list.push_back(v);}; // Add view to the list of views
 
@@ -702,6 +717,6 @@ void Database::pullTracks(vector<Track> &tv) { // tv = track vector
                 break;
         }
     }
-    sqlite3_finalize(stmt);
+    sqlite3_reset(stmt);
     cout << "pullTracks ran successfully" << endl;
 }

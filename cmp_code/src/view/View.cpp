@@ -17,7 +17,7 @@ void View::setDatabase(Database &d){
 }
 
 
-EditorView::EditorView(Database d, int id){
+EditorView::EditorView(Database d, Track T){
     // Called from MainView; Allows editing of Track info
     // and inserts / updates / deletions from the tag table.
     // id is the TRACKS table track_id.
@@ -33,42 +33,44 @@ EditorView::EditorView(Database d, int id){
     int choice = 0; // keyboard input
     int highlight = 0; // controls which row is selected
     bool active = true;
+    
+    
     sqlite3_stmt* ed_stmt;
     // Track variables
-    int t_no;
-    string t;
-    string an;
-    string artist;
-    string album;
-    int year;
-    string ca_path;
+    // int t_no;
+    // string t;
+    // string an;
+    // string artist;
+    // string album;
+    // int year;
+    // string ca_path;
     // Menu variables
     char edit_input[80];
     string e_inp_str;
 
     // Compile query
-    string q = "\
-    SELECT\
-        track_no,\
-        title,\
-        album_name,\
-        artist_name,\
-        release_year,\
-        cover_art\
-    FROM\
-        tracks\
-    WHERE\
-        track_id = \
-    ";
-    q.append(to_string(id));
+    // string q = "\
+    // SELECT\
+    //     track_no,\
+    //     title,\
+    //     album_name,\
+    //     artist_name,\
+    //     release_year,\
+    //     cover_art\
+    // FROM\
+    //     tracks\
+    // WHERE\
+    //     track_id = \
+    // ";
+    // q.append(to_string(id));
 
     // Prepare query
-    error = sqlite3_prepare_v2(db, q.c_str(), -1, &ed_stmt, nullptr);
-    if (error != SQLITE_DONE && error != SQLITE_ROW)
-        cout << sqlite3_errmsg(db) << endl;
-    error = sqlite3_step(ed_stmt);
-    if (error != SQLITE_DONE && error != SQLITE_ROW)
-        cout << sqlite3_errmsg(db) << endl;
+    // error = sqlite3_prepare_v2(db, q.c_str(), -1, &ed_stmt, nullptr);
+    // if (error != SQLITE_DONE && error != SQLITE_ROW)
+    //     cout << sqlite3_errmsg(db) << endl;
+    // error = sqlite3_step(ed_stmt);
+    // if (error != SQLITE_DONE && error != SQLITE_ROW)
+    //     cout << sqlite3_errmsg(db) << endl;
     vector<string> menu_txt = {
         "Track Number", "Title", "Album Name",
         "Artist Name", "Release Year", "Cover Path",
@@ -76,20 +78,13 @@ EditorView::EditorView(Database d, int id){
     };
 
     // Pull parameters
-    t_no = sqlite3_column_int(ed_stmt, 0);
-    t = reinterpret_cast<const char*>(sqlite3_column_text(ed_stmt, 1));
-    album = reinterpret_cast<const char*>(sqlite3_column_text(ed_stmt, 2));
-    artist = reinterpret_cast<const char*>(sqlite3_column_text(ed_stmt, 3));
-    year = sqlite3_column_int(ed_stmt, 4);
-    if (sqlite3_column_text(ed_stmt, 5) != nullptr)
-        ca_path = reinterpret_cast<const char*>(sqlite3_column_text(ed_stmt, 5));
-
-    // Value vector
-    vector<string> value_vec = {
-        to_string(t_no), t, album,
-        artist, to_string(year), ca_path,
-        ""
-    };
+    // t_no = sqlite3_column_int(ed_stmt, 0);
+    // t = reinterpret_cast<const char*>(sqlite3_column_text(ed_stmt, 1));
+    // album = reinterpret_cast<const char*>(sqlite3_column_text(ed_stmt, 2));
+    // artist = reinterpret_cast<const char*>(sqlite3_column_text(ed_stmt, 3));
+    // year = sqlite3_column_int(ed_stmt, 4);
+    // if (sqlite3_column_text(ed_stmt, 5) != nullptr)
+    //     ca_path = reinterpret_cast<const char*>(sqlite3_column_text(ed_stmt, 5));
 
     // Release database resources
     // sqlite3_finalize(ed_stmt);
@@ -108,6 +103,13 @@ EditorView::EditorView(Database d, int id){
 
     while(active)
     {
+        // Value vector
+        vector<string> value_vec = {
+            to_string(T.GetTrackNo()), T.GetTitle(), T.GetAlbumName(),
+            T.GetArtistName(), to_string(T.GetReleaseYear()), T.GetCoverArt(),
+            ""
+        };
+
         // Print menu
         for (int i = 0; i < 7; i++)
             {
@@ -161,22 +163,28 @@ EditorView::EditorView(Database d, int id){
                 switch(highlight)
                 {
                     case 0: // track_no update
-                        d.updateTrackNo(id, atoi(edit_input));
+                        d.updateTrackNo(T.GetTrackId(), atoi(edit_input));
+                        T.SetTrackNo(atoi(edit_input));
                         break;
                     case 1: // Title update
-                        d.updateTitle(id, e_inp_str);
+                        d.updateTitle(T.GetTrackId(), e_inp_str);
+                        T.SetTitle(e_inp_str);
                         break;
                     case 2: // Album Name
-                        d.updateAlbum(id, e_inp_str);
+                        d.updateAlbum(T.GetTrackId(), e_inp_str);
+                        T.SetAlbumName(e_inp_str);
                         break;
                     case 3: // Artist Name
-                        d.updateArtist(id, e_inp_str);
+                        d.updateArtist(T.GetTrackId(), e_inp_str);
+                        T.SetArtistName(e_inp_str);
                         break;
                     case 4: // Release Year update
-                        d.updateReleaseYear(id, atoi(edit_input));
+                        d.updateReleaseYear(T.GetTrackId(), atoi(edit_input));
+                        T.SetReleaseYear(atoi(edit_input));
                         break;
                     case 5: // Cover art path update
-                        d.updateCoverArt(id, e_inp_str);
+                        d.updateCoverArt(T.GetTrackId(), e_inp_str);
+                        T.SetCoverArt(e_inp_str);
                         break;
                     default:
                         break;
@@ -217,57 +225,6 @@ MainView::MainView(Database d){
 
     // Start ncurses window
     initscr();
-
-    // TODO: refactor the sql pull into it's own function
-    // query database for all tracks
-    // Write query
-    // string query = "\
-    // SELECT\
-    //     SUM(1) OVER (ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW),\
-    //     track_id,\
-    //     title,\
-    //     artist_name,\
-    //     album_name\
-    // FROM\
-    //     tracks;";
-    // // Initialize statement object to store results
-    // sqlite3_stmt* stmt;
-    // // Prepare query
-    // sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
-    
-    // // Define variables
-    // vector<int> temp_ind;
-    // vector<int> track_id;
-    // vector<string> title;
-    // vector<string> artist;
-    // vector<string> album;
-    // bool done = false;
-    // while (!done)
-    // {
-    //     switch(sqlite3_step(stmt))
-    //     {
-    //         case SQLITE_ROW:
-    //             // Process row into vectors
-    //             temp_ind.push_back(sqlite3_column_int(stmt, 0));
-    //             track_id.push_back(sqlite3_column_int(stmt, 1));
-    //             title.push_back(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)));
-    //             artist.push_back(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)));
-    //             album.push_back(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4)));
-    //             break;
-            
-    //         case SQLITE_DONE:
-    //             done = true;
-    //             break;
-            
-    //         default:
-    //             // TODO: implement error handling here
-    //             fprintf(stderr, "Failed to grab tracks.\n");
-    //             cout << (sqlite3_errmsg(db)) << endl;
-    //             done = true;
-    //             break;
-    //     }
-    // }
-    // sqlite3_reset(stmt);
 
     // Clean tracks vector and repull
     d.pullTracks(tracks);
@@ -340,7 +297,7 @@ MainView::MainView(Database d){
                 active = false;
                 break;
             case 'e':
-                EditorView(d, highlight);
+                EditorView(d, tracks[highlight - 1]);
                 wclear(main_w);
                 d.pullTracks(tracks);
                 break;
