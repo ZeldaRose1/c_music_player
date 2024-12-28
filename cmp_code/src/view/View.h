@@ -2,17 +2,22 @@
 
 #include <string>
 #include "../database/Database.h"
+#include "../control/Control.h"
 
 class Database;
 class Track;
+class Control;
 
 class View{
     private:
         static int view_count;
+    protected:
         Database *d;
+        Control *c;
     public:
         // virtual void update();
         void setDatabase(Database&);
+        void setControl(Control&);
         // TODO: fix the equality check once the views are distinguished
         bool operator==(const View& rhs) {
             return true;
@@ -24,7 +29,7 @@ class MainView : public View{
     // control which track to play.
     private:
     public:
-        MainView(Database); // Constructor that will set the DB pointer
+        MainView(Database, Control); // Constructor that will set the DB pointer
         // void update();
 };
 

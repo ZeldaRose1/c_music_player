@@ -114,6 +114,6 @@ class Database{
         void updateCoverArt(int, string);
 
         void pullTracks(vector<Track>&); // Pull a vector of all inputs
-};
-
+}
+;
 

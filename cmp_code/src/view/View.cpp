@@ -4,12 +4,12 @@
 // Third party imports
 #include <ncurses.h>
 #include <panel.h>
-#include <AL/al.h>
-#include <AL/alc.h>
 
 // Custom imports
 #include "../view/View.h"
 #include "../database/Database.h"
+
+// TODO: Edit the main view display to show the track that's currently playing and the time
 
 
 void View::setDatabase(Database &d){
@@ -17,7 +17,12 @@ void View::setDatabase(Database &d){
 }
 
 
-EditorView::EditorView(Database d, Track T){
+void View::setControl(Control &c){
+    this->c = &c;
+}
+
+
+EditorView::EditorView(Database D, Track T){
     // Called from MainView; Allows editing of Track info
     // and inserts / updates / deletions from the tag table.
     // id is the TRACKS table track_id.
@@ -25,70 +30,23 @@ EditorView::EditorView(Database d, Track T){
     // TODO: setup management of tags table
     
     // Set database for editor view
-    setDatabase(d);
-    sqlite3 *db = d.getDatabase();
+    setDatabase(D);
+    sqlite3 *db = d->getDatabase();
 
     // Declare variables for use in the rest of the EditorView
     int error = 0;
     int choice = 0; // keyboard input
     int highlight = 0; // controls which row is selected
     bool active = true;
-    
-    
-    sqlite3_stmt* ed_stmt;
-    // Track variables
-    // int t_no;
-    // string t;
-    // string an;
-    // string artist;
-    // string album;
-    // int year;
-    // string ca_path;
-    // Menu variables
+
     char edit_input[80];
     string e_inp_str;
 
-    // Compile query
-    // string q = "\
-    // SELECT\
-    //     track_no,\
-    //     title,\
-    //     album_name,\
-    //     artist_name,\
-    //     release_year,\
-    //     cover_art\
-    // FROM\
-    //     tracks\
-    // WHERE\
-    //     track_id = \
-    // ";
-    // q.append(to_string(id));
-
-    // Prepare query
-    // error = sqlite3_prepare_v2(db, q.c_str(), -1, &ed_stmt, nullptr);
-    // if (error != SQLITE_DONE && error != SQLITE_ROW)
-    //     cout << sqlite3_errmsg(db) << endl;
-    // error = sqlite3_step(ed_stmt);
-    // if (error != SQLITE_DONE && error != SQLITE_ROW)
-    //     cout << sqlite3_errmsg(db) << endl;
     vector<string> menu_txt = {
         "Track Number", "Title", "Album Name",
         "Artist Name", "Release Year", "Cover Path",
         "Edit Tags"
     };
-
-    // Pull parameters
-    // t_no = sqlite3_column_int(ed_stmt, 0);
-    // t = reinterpret_cast<const char*>(sqlite3_column_text(ed_stmt, 1));
-    // album = reinterpret_cast<const char*>(sqlite3_column_text(ed_stmt, 2));
-    // artist = reinterpret_cast<const char*>(sqlite3_column_text(ed_stmt, 3));
-    // year = sqlite3_column_int(ed_stmt, 4);
-    // if (sqlite3_column_text(ed_stmt, 5) != nullptr)
-    //     ca_path = reinterpret_cast<const char*>(sqlite3_column_text(ed_stmt, 5));
-
-    // Release database resources
-    // sqlite3_finalize(ed_stmt);
-    sqlite3_reset(ed_stmt);
 
     // Initialize and pull window parameters
     int yMax = 0;
@@ -163,27 +121,27 @@ EditorView::EditorView(Database d, Track T){
                 switch(highlight)
                 {
                     case 0: // track_no update
-                        d.updateTrackNo(T.GetTrackId(), atoi(edit_input));
+                        d->updateTrackNo(T.GetTrackId(), atoi(edit_input));
                         T.SetTrackNo(atoi(edit_input));
                         break;
                     case 1: // Title update
-                        d.updateTitle(T.GetTrackId(), e_inp_str);
+                        d->updateTitle(T.GetTrackId(), e_inp_str);
                         T.SetTitle(e_inp_str);
                         break;
                     case 2: // Album Name
-                        d.updateAlbum(T.GetTrackId(), e_inp_str);
+                        d->updateAlbum(T.GetTrackId(), e_inp_str);
                         T.SetAlbumName(e_inp_str);
                         break;
                     case 3: // Artist Name
-                        d.updateArtist(T.GetTrackId(), e_inp_str);
+                        d->updateArtist(T.GetTrackId(), e_inp_str);
                         T.SetArtistName(e_inp_str);
                         break;
                     case 4: // Release Year update
-                        d.updateReleaseYear(T.GetTrackId(), atoi(edit_input));
+                        d->updateReleaseYear(T.GetTrackId(), atoi(edit_input));
                         T.SetReleaseYear(atoi(edit_input));
                         break;
                     case 5: // Cover art path update
-                        d.updateCoverArt(T.GetTrackId(), e_inp_str);
+                        d->updateCoverArt(T.GetTrackId(), e_inp_str);
                         T.SetCoverArt(e_inp_str);
                         break;
                     default:
@@ -209,13 +167,14 @@ EditorView::EditorView(Database d, Track T){
 };
 
 
-MainView::MainView(Database d){
+MainView::MainView(Database D, Control C){
     // Function for the main view of music player
 
-    // TODO: Update main view after edits.
-
     // Initialize database
-    setDatabase(d);
+    setDatabase(D);
+
+    // Initialize Control
+    setControl(C);
     // sqlite3 *db = d.getDatabase();
     // cout << sqlite3_errmsg(db) << endl;
     int choice = 0; // keyboard input
@@ -227,7 +186,7 @@ MainView::MainView(Database d){
     initscr();
 
     // Clean tracks vector and repull
-    d.pullTracks(tracks);
+    d->pullTracks(tracks);
 
     // Initialize and pull window parameters
     int yMax = 0;
@@ -297,16 +256,17 @@ MainView::MainView(Database d){
                 active = false;
                 break;
             case 'e':
-                EditorView(d, tracks[highlight - 1]);
+                EditorView(*d, tracks[highlight - 1]);
                 wclear(main_w);
-                d.pullTracks(tracks);
+                d->pullTracks(tracks);
                 break;
+            case 10:
+                // mvwprintw(main_w, yMax - 2, 0, "Your choice was: %s", tracks[highlight - 1].GetTitle().c_str());
+                c->play(tracks[highlight - 1]);
+                break;    
             default:
                 break;
         }
-        // Edit this to play song instead of printing selection.
-        if (choice == 10) // 10 is enter key
-            mvwprintw(main_w, yMax - 2, 0, "Your choice was: %s", tracks[highlight - 1].GetTitle().c_str());
     }
     
     refresh();
