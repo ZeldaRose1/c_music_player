@@ -260,10 +260,14 @@ MainView::MainView(Database D, Control C){
                 wclear(main_w);
                 d->pullTracks(tracks);
                 break;
-            case 10:
-                // mvwprintw(main_w, yMax - 2, 0, "Your choice was: %s", tracks[highlight - 1].GetTitle().c_str());
+            case 10: // Enter key
+                mvwprintw(main_w, 40, 5, "%s", tracks[highlight - 1].GetTitle().c_str()); // Print title
+                mvwprintw(main_w, 42, 5, "%s", tracks[highlight - 1].GetTrackLocation().c_str()); // Print title
                 c->play(tracks[highlight - 1]);
-                break;    
+                break;
+            case 's':
+                c->stop();
+                break;
             default:
                 break;
         }

@@ -334,7 +334,7 @@ void Database::scanMusicFolder(string folder=""){
 
     // Loop over all items in the directory
     for (const auto& entry : std::filesystem::directory_iterator(folder)) {
-        std::filesystem::path outfilename = entry.path();
+        std::filesystem::path outfilename = filesystem::canonical(entry.path());
         
 
         // Check if an entry is a directory or not

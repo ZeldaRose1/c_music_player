@@ -53,11 +53,11 @@ void Control::play(Track T)
     }
 
     // Pull track location
-    // const char* file_name = T.GetTrackLocation().c_str();
-    const char* file_name = "/data/Music/divine_lollia.mp3";
+    string file_name = T.GetTrackLocation().c_str();
+    // const char* file_name = "/data/Music/divine_lollia.mp3";
 
     // Initialize music file
-    Mix_Music* music = Mix_LoadMUS(file_name);
+    Mix_Music* music = Mix_LoadMUS(file_name.c_str());
     // Check if opening file succeeded.
     if (!music)
     {
