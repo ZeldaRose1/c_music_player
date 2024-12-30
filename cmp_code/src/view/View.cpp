@@ -268,6 +268,9 @@ MainView::MainView(Database D, Control C){
             case 's':
                 c->stop();
                 break;
+            case 'p':
+                c->pause();
+                break;
             default:
                 break;
         }

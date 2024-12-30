@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_audio.h>
 
 #include "../control/Control.h"
 
@@ -8,6 +9,9 @@ Control::Control(Database &db)
 {
     // Initialize pointer to Database object
     d = &db;
+
+    // Initialize pause_int value
+    pause_int = 1;
 
     // Initialize currently playing object to nullptr
     currently_playing = nullptr;
@@ -88,4 +92,15 @@ void Control::stop(){
 
     // Reset pointer
     currently_playing = nullptr;
+}
+
+// Toggle track pause
+void Control::pause(){
+    // Toggle pause tracker
+    pause_int = pause_int == 0 ? 1 : 0;
+    
+    if (pause_int)
+        Mix_ResumeMusic();
+    else
+        Mix_PauseMusic();
 }
