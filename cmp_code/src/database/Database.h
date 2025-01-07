@@ -37,7 +37,10 @@ class Track{
         string cover_art; // path to cover art.
         int tmp_id; // Temporary id for sorting
     public:
+        // Base constructor
         Track(int, int, string, string, string, int, float, string, string, int);
+        // Copy constructor
+        Track(const Track &);
         
         // Getters
         int GetTrackId();
@@ -73,6 +76,9 @@ class Playlist{
         string name; // Name of playlist
         float duration; // Full playtime of playlist
         int track_count; // Number of tracks in the playlist
+        int cur_track;
+    public:
+        Playlist(vector<Track> &);
 };
 
 

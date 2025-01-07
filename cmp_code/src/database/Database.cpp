@@ -12,6 +12,8 @@
 #include "tvariant.h"
 #include "fileref.h"
 #include "tag.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 // Custom library imports
 #include "../config/Config.h"
@@ -45,6 +47,22 @@ Track::Track(
     this->cover_art = c_art;
     this->tmp_id = tmp_index;
 };
+
+// Track copy constructor
+Track::Track(const Track &T){
+    track_id = T.track_id;
+    track_no = T.track_no;
+    title = T.title;
+    genre = T.genre;
+    album_name = T.album_name;
+    artist_name = T.artist_name;
+    release_year = T.release_year;
+    duration = T.duration;
+    track_location = T.track_location;
+    cover_art = T.cover_art;
+    tmp_id = T.tmp_id;
+};
+
 
 // Define Track Getters
 int Track::GetTrackId(){return track_id;};
@@ -719,4 +737,11 @@ void Database::pullTracks(vector<Track> &tv) { // tv = track vector
     }
     sqlite3_reset(stmt);
     cout << "pullTracks ran successfully" << endl;
+}
+
+// Playlist definitions
+Playlist::Playlist(vector<Track> &tv){
+    // Make a copy of the vector into playlist class
+    copy(tv.begin(), tv.end(), back_inserter(track_list));
+    cur_track = 0;
 }

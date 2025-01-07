@@ -10,8 +10,14 @@ using namespace std;
 int main(int argc, char ** argv) {
 
     Database d;
-    Control c(d);
-    MainView v(d, c);
+    d.scanMusicFolder("");
+    // Control c(d);
+    // Control::instance = &c;
+    // MainView v(d, *Control::instance);
+    
+    Control *c = new Control(d);
+    // Control::instance = c;
+    MainView v(d, *c);
     // d.updateReleaseYear(1, 2017);
 
     // TODO: Rework Views so they are handling Track objects directly

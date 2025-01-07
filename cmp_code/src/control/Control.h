@@ -25,12 +25,20 @@ class Control{
         // vector<Track> track_list; // I don't think I need this.
         bool shuffle; // Maybe rethink where this should be stored.
         Mix_Music* currently_playing; // Keep track of currently playing track
-        int pause_int;
-        SDL_AudioDeviceID devID;
+        vector<Track> track_list; // Keep track of current track for autoplay
+        int pause_int; // integer value to control pausing behavior
+        int cur_track; // Maintain number of currently playing track
+        // SDL_AudioDeviceID devID;
+        static void EOSHook(); // End of song hook
     public:
+        static Control* instance;
         Control(Database &); // Constructor that sets the Database pointer
         ~Control(); // Destructor that frees audio resources
-        void play(Track); // Starts playing audio
+        void setTrackList(vector<Track>); // Set track list
+        
+        void play(int); // Starts playing audio; start_index
         void stop(); // Stops playing audio
         void pause(); // Toggle pause / play on current track
+        int nextTrack(); // Skip to next track in playlist
+        int prevTrack(); // Return to previously played track
 };

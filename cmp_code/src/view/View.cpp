@@ -261,15 +261,24 @@ MainView::MainView(Database D, Control C){
                 d->pullTracks(tracks);
                 break;
             case 10: // Enter key
-                mvwprintw(main_w, 40, 5, "%s", tracks[highlight - 1].GetTitle().c_str()); // Print title
-                mvwprintw(main_w, 42, 5, "%s", tracks[highlight - 1].GetTrackLocation().c_str()); // Print title
-                c->play(tracks[highlight - 1]);
+                // mvwprintw(main_w, 40, 5, "%s", tracks[highlight - 1].GetTitle().c_str()); // Print title
+                // mvwprintw(main_w, 42, 5, "%s", tracks[highlight - 1].GetTrackLocation().c_str()); // Print title
+                c->setTrackList(tracks);
+                c->play(highlight - 1);
                 break;
             case 's':
                 c->stop();
                 break;
             case 'p':
                 c->pause();
+                break;
+            case 'm':
+                if (c->nextTrack() == 1)
+                    highlight++;
+                break;
+            case 'n':
+                if (c->prevTrack() == 1)
+                    highlight--;
                 break;
             default:
                 break;
