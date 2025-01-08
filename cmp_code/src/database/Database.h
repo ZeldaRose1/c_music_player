@@ -102,7 +102,7 @@ class Database{
         Database(); // Forward declaration of constructor
         ~Database(); // Destructor
         // Database(string, Config); // Forward declaration of constructor
-        void refresh_database(); // Refresh SQL database
+        void refreshDatabase(); // Refresh SQL database
         // void subscribe(View); // Add view to the list of views
         // void unsubscribe(View); // Remove view from view_list
         void scanMusicFolder(string); // Scan through database

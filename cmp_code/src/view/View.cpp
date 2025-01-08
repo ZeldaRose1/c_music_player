@@ -280,6 +280,11 @@ MainView::MainView(Database D, Control C){
                 if (c->prevTrack() == 1)
                     highlight--;
                 break;
+            case 'r':
+                d->refreshDatabase();
+                d->pullTracks(tracks);
+                wclear(main_w);
+                break;
             default:
                 break;
         }

@@ -745,3 +745,40 @@ Playlist::Playlist(vector<Track> &tv){
     copy(tv.begin(), tv.end(), back_inserter(track_list));
     cur_track = 0;
 }
+
+
+// Purge and refresh database
+void Database::refreshDatabase()
+{
+    int error = 0;
+    
+    string query = "\
+    DELETE\
+    FROM\
+        tracks;";
+    // Initialize statement object to store results
+    sqlite3_stmt* stmt;
+    // Prepare query
+    error = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+    if (error != SQLITE_OK)
+    {
+        cout << "Error in refreshDatabase(). Could not prepare statement." << endl;
+        cout << error << endl;
+        return;
+    }
+    
+    // Execute query
+    error = sqlite3_step(stmt);
+    if (error != SQLITE_DONE)
+    {
+        cout << "Error in refreshDatabase(). Could not execute statement." << endl;
+        cout << error << endl;
+        return;
+    }
+    
+    // Release resources from statement
+    sqlite3_finalize(stmt);
+
+    // Repopulate database
+    scanMusicFolder("");
+}
